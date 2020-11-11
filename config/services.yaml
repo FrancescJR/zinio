@@ -8,24 +8,23 @@ parameters:
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        autowire: false      # Automatically injects dependencies in your services.
+        autoconfigure: false # Automatically registers your services as commands, event subscribers, etc.
+        public: false
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
+    #Adding it all in one file
+    #Domain:
+    domain.services.create_cities:
+      class: Zinio\Cesc\Domain\City\Service\CreateCitiesService
 
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller/'
-        tags: ['controller.service_arguments']
+    #Application
+    application.services.get_shortest_city_path:
+      class: Zinio\Cesc\Application\City\GetShortestPathService
+      arguments:
+        - '@domain.services.create_cities'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    #Infrastructure
+    Zinio\Cesc\Infrastructure\Console\GetShortestPathCommand:
+      arguments:
+        - '@application.services.get_shortest_city_path'
+      tags: ['console.command']
