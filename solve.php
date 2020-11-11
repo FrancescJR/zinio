@@ -2,3 +2,4 @@
 
 // entrypoint for symfony application.
 
+echo "hola";
