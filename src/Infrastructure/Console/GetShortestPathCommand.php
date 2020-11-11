@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Zinio\Cesc\Infrastructure\Console;
 
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,8 +12,8 @@ use Zinio\Cesc\Domain\City\Exception\InvalidValueException;
 
 class GetShortestPathCommand extends Command
 {
+    public const FILENAME = 'cities.txt';
     protected static $defaultName = 'cesc:solve';
-
     private $getShortestPathService;
 
     public function __construct(
@@ -33,20 +34,42 @@ class GetShortestPathCommand extends Command
      * @param OutputInterface $output
      *
      * @return int|void
-     * @throws InvalidValueException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // get File
         $cities = [];
+        // get File
+        try {
+            if ( ! file_exists(self::FILENAME)) {
+                throw new Exception("File" . self::FILENAME . "not found");
+            }
+            $handler = fopen(self::FILENAME, "r");
 
-        // validate File
+            if (!$handler) {
+                throw new Exception("Could not open file");
+            }
+
+            while (($city = fgetcsv($handler, 1000, "\t")) !== FALSE) {
+                if (count($city) != 3) {
+                    throw new Exception("Delimiter must be tab character. Each line should have 3 fields.");
+                }
+                if (! is_numeric($city[1]) or ! is_numeric($city[2])) {
+                    throw new Exception("Latitude and longitude of the city must be numbers.");
+                }
+                $cities[] = $city;
+            }
+        } catch (Exception $e) {
+            $output->writeln('ERROR: ' . $e->getMessage());
+
+            return 1;
+        }
 
         // execute service
         try {
             $cityPath = $this->getShortestPathService->execute($cities);
         } catch (InvalidValueException $e) {
             $output->writeln('ERROR: ' . $e->getMessage());
+
             return 1;
         }
 

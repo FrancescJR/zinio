@@ -8,6 +8,8 @@ use Zinio\Cesc\Domain\City\Exception\InvalidValueException;
 
 class CityCoordinates
 {
+
+
     /**
      * Coordinates constructor.
      *

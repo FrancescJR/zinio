@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Zinio\Cesc\Application\City;
 
 use Zinio\Cesc\Application\City\PlainObject\CityPO;
+use Zinio\Cesc\Domain\City\City;
 use Zinio\Cesc\Domain\City\Exception\InvalidValueException;
 use Zinio\Cesc\Domain\City\Service\CreateCitiesService;
 
@@ -26,15 +27,46 @@ class GetShortestPathService
     {
         $cities = $this->createCitiesService->execute($citiesText);
 
-        // Real logic of the solution (insert internet algorithm here...)
+        // straight solution, calculate shorter path from the first and so on.
+        $startingCity = $cities[0];
 
-        $citiesPOs = [];
+        $citiesPOs = [
+            new CityPO($startingCity)
+        ];
 
-        foreach ($cities as $city) {
-            $citiesPOs[] = new CityPO($city);
+        unset($cities[0]);
+
+        while($cities) {
+            $nextCityIndexInArray = $this->getClosestCityIndexInArray($startingCity, $cities);
+            $citiesPOs[] = new CityPO($cities[$nextCityIndexInArray]);
+            unset($cities[$nextCityIndexInArray]);
         }
 
         return $citiesPOs;
     }
+
+    /**
+     * @param City $startingCity
+     * @param City[] $cities
+     *
+     * @return int|null
+     */
+    private function getClosestCityIndexInArray(City $startingCity, array $cities): ?int
+    {
+        $closestCity = null;
+        $nextCity = null;
+        $shortestDistance = 0;
+
+        foreach($cities as $key => $city) {
+            $distance = $startingCity->getDistanceFromCity($city);
+            if (!$closestCity or $distance <= $shortestDistance) {
+                $closestCity = $key;
+                $shortestDistance = $distance;
+            }
+        }
+
+        return $closestCity;
+    }
+
 
 }

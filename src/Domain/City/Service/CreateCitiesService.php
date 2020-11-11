@@ -22,7 +22,7 @@ class CreateCitiesService
         foreach ($citiesPlain as $cityText) {
             $cities[] = new City(
                 new CityName($cityText[0]),
-                new CityCoordinates($cityText[1], $cityText[2])
+                new CityCoordinates((float)$cityText[1], (float)$cityText[2])
             );
         }
 
