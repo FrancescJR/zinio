@@ -5,6 +5,7 @@ namespace Zinio\Cesc\Infrastructure\Console;
 
 use Exception;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Zinio\Cesc\Application\City\GetShortestPathService;
@@ -13,6 +14,7 @@ use Zinio\Cesc\Domain\City\Exception\InvalidValueException;
 class GetShortestPathCommand extends Command
 {
     public const FILENAME = 'cities.txt';
+    private const FILENAME_ARGUMENT = 'filename';
     protected static $defaultName = 'cesc:solve';
     private $getShortestPathService;
 
@@ -27,6 +29,12 @@ class GetShortestPathCommand extends Command
     {
         $this->setDescription('Challenge endpoint.');
         $this->setHelp('Solves the challenge.');
+        $this->addArgument(
+            self::FILENAME_ARGUMENT,
+            InputArgument::OPTIONAL,
+            "the filename in case you want to use a different one",
+            self::FILENAME
+        );
     }
 
     /**
@@ -39,11 +47,12 @@ class GetShortestPathCommand extends Command
     {
         $cities = [];
         // get File
+        $file = $input->getArgument(self::FILENAME_ARGUMENT);
         try {
-            if ( ! file_exists(self::FILENAME)) {
-                throw new Exception("File" . self::FILENAME . "not found");
+            if ( ! file_exists($file)) {
+                throw new Exception("File" . $file . "not found");
             }
-            $handler = fopen(self::FILENAME, "r");
+            $handler = fopen($file, "r");
 
             if (!$handler) {
                 throw new Exception("Could not open file");
@@ -61,7 +70,7 @@ class GetShortestPathCommand extends Command
         } catch (Exception $e) {
             $output->writeln('ERROR: ' . $e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
 
         // execute service
@@ -70,13 +79,13 @@ class GetShortestPathCommand extends Command
         } catch (InvalidValueException $e) {
             $output->writeln('ERROR: ' . $e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
 
         foreach ($cityPath as $cityPO) {
             $output->write($cityPO);
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
