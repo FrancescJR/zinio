@@ -22,9 +22,13 @@ services:
       class: Zinio\Cesc\Application\City\GetShortestPathService
       arguments:
         - '@domain.services.create_cities'
+        - '@repository.city'
 
     #Infrastructure
     Zinio\Cesc\Infrastructure\Console\GetShortestPathCommand:
       arguments:
         - '@application.services.get_shortest_city_path'
       tags: ['console.command']
+
+    repository.city:
+      class: Zinio\Cesc\Infrastructure\Memory\CityRepository
