@@ -54,15 +54,15 @@ class GetShortestPathCommand extends Command
             }
             $handler = fopen($file, "r");
 
-            if (!$handler) {
+            if ( ! $handler) {
                 throw new Exception("Could not open file");
             }
 
-            while (($city = fgetcsv($handler, 1000, "\t")) !== FALSE) {
+            while (($city = fgetcsv($handler, 1000, "\t")) !== false) {
                 if (count($city) != 3) {
                     throw new Exception("Delimiter must be tab character. Each line should have 3 fields.");
                 }
-                if (! is_numeric($city[1]) or ! is_numeric($city[2])) {
+                if ( ! is_numeric($city[1]) or ! is_numeric($city[2])) {
                     throw new Exception("Latitude and longitude of the city must be numbers.");
                 }
                 $cities[] = $city;
