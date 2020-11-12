@@ -49,7 +49,7 @@ class CityRepository implements CityRepositoryInterface
         $shortestDistance = 0;
 
         foreach ($this->cities as $toCity) {
-            $distance = $city->getDistanceFromCity($toCity);
+            $distance = $this->getDistanceBetweenCities($city, $toCity);
             if ( ! $closestCity or $distance <= $shortestDistance) {
                 $closestCity      = $toCity;
                 $shortestDistance = $distance;
@@ -62,5 +62,30 @@ class CityRepository implements CityRepositoryInterface
     public function getCountCities(): int
     {
         return count($this->cities);
+    }
+
+    /**
+     * @param City $cityFrom
+     * @param City $cityTo
+     *
+     * @return float
+     */
+    public function getDistanceBetweenCities(City $cityFrom, City $cityTo): float
+    {
+        // convert from degrees to radians
+        $latFrom = deg2rad($cityFrom->getCoordinates()->getLatitude());
+        $lonFrom = deg2rad($cityFrom->getCoordinates()->getLongitude());
+        $latTo   = deg2rad($cityTo->getCoordinates()->getLatitude());
+        $lonTo   = deg2rad($cityTo->getCoordinates()->getLongitude());
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+                               cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+        # 6371 is the earth radius in km, so the result is in km.
+        return $angle * 6371;
+
     }
 }

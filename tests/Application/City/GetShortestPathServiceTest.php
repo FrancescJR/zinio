@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Zinio\Cesc\Application\City\GetShortestPathService;
 use Zinio\Cesc\Application\City\PlainObject\CityPO;
 use Zinio\Cesc\Domain\City\City;
+use Zinio\Cesc\Domain\City\CityRepositoryInterface;
 use Zinio\Cesc\Domain\City\Service\CreateCitiesService;
 
 class GetShortestPathServiceTest extends TestCase
@@ -19,7 +20,10 @@ class GetShortestPathServiceTest extends TestCase
         $createCitiesService = self::createMock(CreateCitiesService::class);
         $createCitiesService->method('execute')->willReturn([$city]);
 
-        $service = new GetShortestPathService($createCitiesService);
+        $service = new GetShortestPathService(
+            $createCitiesService,
+            self::createMock(CityRepositoryInterface::class)
+        );
 
         $result = $service->execute([]);
 

@@ -45,8 +45,6 @@ class GetShortestPathService
             $this->cityRepository->save($city);
         }
 
-        echo $this->cityRepository->getCountCities();
-
         while ($this->cityRepository->getCountCities()) {
             $nextCity = $this->cityRepository->getClosestCity($startingCity);
             $citiesPOs[]          = new CityPO($nextCity);
