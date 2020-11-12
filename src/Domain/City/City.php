@@ -67,6 +67,7 @@ class City
 
         $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
                                cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+        # 6371 is the earth radius in km, so the result is in km.
         return $angle * 6371;
     }
 

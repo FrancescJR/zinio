@@ -74,8 +74,31 @@ two coordinates)
 The email (but not the instructions) suggested to use Symfony, so I did. While it was relief using
 Symfony's dependency injection container, I think that for a simple script, where an input is a text
 file in the same machine, and the output is the standard output, the use of Symfony is a little bit
-overkill
+overkill.
 
+Anyway I used the Symfony command feature, and the solve.php what actually does is execute a command.
+It should be the same as executing `bin/console cesc:challenge cities.txt`
+
+###More about infra
+Since it is a simple script, having a repository to save in memory would be a little bit overkill.
+But having a repo implementing this interface:
+
+```interface CityRepositoryInterface
+{
+    public function save(City $city):void;
+
+    public function remove(City $city): void;
+
+    public function getClosestCity(City $city): City;
+
+}
+```
+might make the service even more readable. And if we were to save in DB for real, we could use in
+built function of the DB for the coordinates te get the closes city, avoiding us to code both
+the `City:getDistanceFromCity()` and `GetShortestPathService:getClosestCityIndexInArray()`. Actually
+the code for the service would be prettier if we were to use this repo.
+
+Actually I am going to do it: checkout branch `feature/with-repo` to see the code.
 
 ###About Docker
 The email also suggested the use of docker. For a simple script, there's no need to overcomplicate
