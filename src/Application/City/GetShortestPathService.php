@@ -36,9 +36,9 @@ class GetShortestPathService
 
         unset($cities[0]);
 
-        while($cities) {
+        while ($cities) {
             $nextCityIndexInArray = $this->getClosestCityIndexInArray($startingCity, $cities);
-            $citiesPOs[] = new CityPO($cities[$nextCityIndexInArray]);
+            $citiesPOs[]          = new CityPO($cities[$nextCityIndexInArray]);
             unset($cities[$nextCityIndexInArray]);
         }
 
@@ -53,14 +53,14 @@ class GetShortestPathService
      */
     private function getClosestCityIndexInArray(City $startingCity, array $cities): ?int
     {
-        $closestCity = null;
-        $nextCity = null;
+        $closestCity      = null;
+        $nextCity         = null;
         $shortestDistance = 0;
 
-        foreach($cities as $key => $city) {
+        foreach ($cities as $key => $city) {
             $distance = $startingCity->getDistanceFromCity($city);
-            if (!$closestCity or $distance <= $shortestDistance) {
-                $closestCity = $key;
+            if ( ! $closestCity or $distance <= $shortestDistance) {
+                $closestCity      = $key;
                 $shortestDistance = $distance;
             }
         }
