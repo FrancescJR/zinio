@@ -39,6 +39,7 @@ class GetShortestPathService
         while ($cities) {
             $nextCityIndexInArray = $this->getClosestCityIndexInArray($startingCity, $cities);
             $citiesPOs[]          = new CityPO($cities[$nextCityIndexInArray]);
+            $startingCity = $cities[$nextCityIndexInArray];
             unset($cities[$nextCityIndexInArray]);
         }
 
@@ -64,7 +65,6 @@ class GetShortestPathService
                 $shortestDistance = $distance;
             }
         }
-
         return $closestCity;
     }
 
